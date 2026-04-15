@@ -70,7 +70,7 @@ analytics-app/
 │   ├── src/
 │   └── index.html
 │
-├── assets/
+├── screenshots/
 │   ├── light.png
 │   └── dark.png
 │
