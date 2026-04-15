@@ -24,9 +24,17 @@ Built for showcasing:
 
 ## 🖼️ Preview
 
-### ☀️ Light Mode
-
 ### 🌙 Dark Mode
+![Dark Mode](screenshots/previewdark.png)
+
+![Dark Mode](screenshots/previewdark2.png)
+
+
+### ☀️ Light Mode
+![Light Mode](screenshots/previewlight.png)
+
+
+![Light Mode](screenshots/previewlight2.png)
 
 ---
 
