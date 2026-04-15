@@ -12,6 +12,5 @@ def get_sheet_data():
     )
 
     client = gspread.authorize(creds)
-    sheet = client.open("SalesData").sheet1
-
+    sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1hzSMqro9NnmD8vCnff7IjML8KXfUzpwS2HGijagyEJc/edit?usp=sharing").sheet1
     return sheet.get_all_records()

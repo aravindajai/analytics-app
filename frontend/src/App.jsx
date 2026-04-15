@@ -19,12 +19,31 @@ function App() {
   };
 
   useEffect(() => {
-    loadData();
-
-    const interval = setInterval(loadData, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
+    let isMounted = true;
+  
+    const fetchData = async () => {
+      try {
+        const res = await fetchAnalytics(start, end);
+        console.log("API RESPONSE:", res);        // 👈 ADD THIS
+        console.log("DATA:", res.data);           // 👈 ADD THIS
+    
+        if (isMounted) {
+          setData(res.data);
+        }
+      } catch (err) {
+        console.error("ERROR:", err);
+      }
+    };
+  
+    fetchData();
+  
+    const interval = setInterval(fetchData, 60000);
+  
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [start, end]);
   if (!data) return <div>Loading...</div>;
 
   return (
