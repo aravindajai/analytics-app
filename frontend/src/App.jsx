@@ -4,8 +4,10 @@ import {
   LineChart, Line, XAxis, YAxis,
   BarChart, Bar,
   AreaChart, Area,
-  Tooltip
+  Tooltip,
+  ResponsiveContainer
 } from "recharts";
+import "./App.css";
 
 function App() {
   const [data, setData] = useState(null);
@@ -20,88 +22,98 @@ function App() {
 
   useEffect(() => {
     let isMounted = true;
-  
+
     const fetchData = async () => {
       try {
         const res = await fetchAnalytics(start, end);
-        console.log("API RESPONSE:", res);        // 👈 ADD THIS
-        console.log("DATA:", res.data);           // 👈 ADD THIS
-    
-        if (isMounted) {
-          setData(res.data);
-        }
+        if (isMounted) setData(res.data);
       } catch (err) {
-        console.error("ERROR:", err);
+        console.error(err);
       }
     };
-  
+
     fetchData();
-  
     const interval = setInterval(fetchData, 60000);
-  
+
     return () => {
       isMounted = false;
       clearInterval(interval);
     };
   }, [start, end]);
-  if (!data) return <div>Loading...</div>;
+
+  if (!data) return <div className="loading">Loading...</div>;
 
   return (
-    <div style={{
-      background: dark ? "#111" : "#fff",
-      color: dark ? "#fff" : "#000",
-      minHeight: "100vh",
-      padding: "20px"
-    }}>
+    <div className={dark ? "app dark" : "app"}>
 
-      <h1>Analytics Dashboard</h1>
+      {/* HEADER */}
+      <div className="header">
+        <h1>📊 Analytics Dashboard</h1>
+        <button onClick={() => setDark(!dark)}>
+          {dark ? "☀️ Light" : "🌙 Dark"}
+        </button>
+      </div>
 
-      {/* Toggle */}
-      <button onClick={() => setDark(!dark)}>
-        Toggle Theme
-      </button>
-
-      {/* Filters */}
-      <div>
+      {/* FILTERS */}
+      <div className="controls">
         <input type="date" onChange={e => setStart(e.target.value)} />
         <input type="date" onChange={e => setEnd(e.target.value)} />
         <button onClick={loadData}>Apply</button>
+        <button onClick={exportCSV}>Export CSV</button>
       </div>
 
-      {/* Export */}
-      <button onClick={exportCSV}>Export CSV</button>
+      {/* KPI CARDS */}
+      <div className="kpi-container">
+        <div className="card">
+          <h3>Total Sales</h3>
+          <p>{data.total_sales}</p>
+        </div>
+        <div className="card">
+          <h3>Total Leads</h3>
+          <p>{data.total_leads}</p>
+        </div>
+      </div>
 
-      {/* KPI */}
-      <h2>Total Sales: {data.total_sales}</h2>
-      <h2>Total Leads: {data.total_leads}</h2>
+      {/* CHARTS */}
+      <div className="charts">
 
-      {/* Daily */}
-      <h3>Daily</h3>
-      <LineChart width={500} height={300} data={data.daily}>
-        <Line dataKey="sales" />
-        <XAxis dataKey="date" />
-        <YAxis />
-        <Tooltip />
-      </LineChart>
+        <div className="card">
+          <h3>Daily Sales</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={data.daily}>
+              <Line type="monotone" dataKey="sales" stroke="#7c3aed" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* Weekly */}
-      <h3>Weekly</h3>
-      <BarChart width={500} height={300} data={data.weekly}>
-        <Bar dataKey="sales" />
-        <XAxis dataKey="week" />
-        <YAxis />
-        <Tooltip />
-      </BarChart>
+        <div className="card">
+          <h3>Weekly Sales</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data.weekly}>
+              <Bar dataKey="sales" fill="#22c55e" />
+              <XAxis dataKey="week" />
+              <YAxis />
+              <Tooltip />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* Monthly */}
-      <h3>Monthly</h3>
-      <AreaChart width={500} height={300} data={data.monthly}>
-        <Area dataKey="sales" />
-        <XAxis dataKey="month" />
-        <YAxis />
-        <Tooltip />
-      </AreaChart>
+        <div className="card">
+          <h3>Monthly Sales</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={data.monthly}>
+              <Area dataKey="sales" stroke="#3b82f6" fill="#93c5fd" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
 
+      </div>
     </div>
   );
 }
